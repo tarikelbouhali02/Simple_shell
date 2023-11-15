@@ -67,7 +67,7 @@ int tacount_args(char *str_input, char *delimiter)
 }
 
 /**
- * tahandle_PATH - Checks if the command to execute could will found in PATH's dirs
+ * tahandle_PATH - Checks if the co xecute could will found in PATH's dirs
  * @commands: Array of strings containing tthis command and args
  * Return: flag zero if is succes; -1 if is error
 */

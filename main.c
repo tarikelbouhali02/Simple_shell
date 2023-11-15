@@ -57,7 +57,7 @@ int main(int ac, char **av)
  * tahandle_arguments -  will Check the number of arguments passed to main
  * @ac: its Number of arguments
  * @av:  its Array of arguments as strings
- * @texec_file:  itsInteger used to check if user wants to exec commands from file
+ * @texec_file:  itsInteger used to check if user wants to exec commands from
  *
  * Return:  will File descriptor to file
 */

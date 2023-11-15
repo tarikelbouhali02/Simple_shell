@@ -6,7 +6,7 @@
  * @cmds_list: Array in the parsed commands
  * @commands: Users input parsed as array in the commands
  *
- * Return: zero  if the commad is NOT exit, minus one if the exit status was Illegal
+ * Return: zero  if the commad is NOT exit, minus one if the exit status was
 */
 int tahandle_exit(char *buff, char **cmds_list, char **commands)
 {

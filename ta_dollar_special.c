@@ -1,29 +1,29 @@
 #include "shell.h"
 
-static int tEXIT_CODE;
-static int tno_init_exit_code = 1;
+static int EXIT_CODE;
+static int no_init_exit_code = 1;
 
 /**
- * taprocess_exit_code - Returns the address  which tEXIT_CODE is stored
+ * process_exit_code - Returns the address at  EXIT_CODE is stored
  *
- * Return: Address  tEXIT_CODE var
+ * Return: Address of EXIT_CODE var
 */
-int *taprocess_exit_code()
+int *tafprocess_exit_code()
 {
-	if (tno_init_exit_code)
+	if (no_init_exit_code)
 	{
-		tEXIT_CODE = 0;
-		tno_init_exit_code = 0;
+		EXIT_CODE = 0;
+		no_init_exit_code = 0;
 	}
 
-	return (&tEXIT_CODE);
+	return (&EXIT_CODE);
 }
 
 /**
- * taset_process_exit_code - Sets the value fr tEXIT_CODE var
- * @code:its  Number representing ext code
+ * set_process_exit_code - Sets  value for EXIT_CODE var
+ * @code: Number representing exit code
 */
-void taset_process_exit_code(int code)
+void tafset_process_exit_code(int code)
 {
-	tEXIT_CODE = code;
+	EXIT_CODE = code;
 }

@@ -155,7 +155,7 @@ void tahandle_aliases(char **commands)
 		str = curr->str;
 		if (ta_strncmp(commands[0], str, cmd_len) == 0 && str[cmd_len] == '=')
 		{ /* the command it is  an alias */
-			alias_len = ta_strlen(&str[cmd_len + 2]); /* +2 beacause in the  "='" chars */
+			alias_len = ta_strlen(&str[cmd_len + 2]); /* +2 b "='" chars */
 			strncpy(tmp_buff, &str[cmd_len + 2], alias_len - 1);
 			tmp_buff[alias_len] = '\0';
 			/* Free and then update at this command */
