@@ -19,12 +19,12 @@ list_t **get_alias_head()
 }
 
 /**
- * t_is_set_alias - Checks if the alias input is meant to set an alias
+ * is_set_alias - Checks if the alias input is meant to set an alias
  * @alias_pair: String as alias arg input
  *
  * Return: 1 for true, 0 otherwise
 */
-int t_is_set_alias(char *alias_pair)
+int is_set_alias(char *alias_pair)
 {
 	int i;
 
@@ -38,10 +38,10 @@ int t_is_set_alias(char *alias_pair)
 }
 
 /**
- * t_set_alias - adds or updates aliases
+ * set_alias - adds or updates aliases
  * @alias_pair: String in the form name=value
 */
-void t_set_alias(char *alias_pair)
+void set_alias(char *alias_pair)
 {
 	char tmp_buff[250];
 	int first_eq, last_eq;
@@ -57,7 +57,7 @@ void t_set_alias(char *alias_pair)
 	strncpy(tmp_buff, alias_pair, first_eq);
 	tmp_buff[first_eq] = '\0';
 	/* Append = and ' symbols */
-	t_strcat(tmp_buff, "='");
+	_strcat(tmp_buff, "='");
 
 	/* Find last eq in case of putting '=' secuentially */
 	for (last_eq = first_eq; alias_pair[last_eq] != '\0'; last_eq++)
@@ -65,16 +65,16 @@ void t_set_alias(char *alias_pair)
 			break;
 
 	/* Copy the second part of the alias */
-	t_strcat(tmp_buff, &alias_pair[last_eq]);
-	t_strcat(tmp_buff, "'");
+	_strcat(tmp_buff, &alias_pair[last_eq]);
+	_strcat(tmp_buff, "'");
 
 	/* Add alias to the global list */
 	for (curr = *alias_addrs; curr != NULL; curr = curr->next)
-		if (t_strncmp(curr->str, alias_pair, first_eq) == 0 &&
+		if (_strncmp(curr->str, alias_pair, first_eq) == 0 &&
 				(curr->str)[first_eq] == '=')
 		{ /* Update already existing alias */
 			free(curr->str);
-			curr->str = t_strdup(tmp_buff);
+			curr->str = _strdup(tmp_buff);
 			return;
 		}
 
@@ -83,28 +83,28 @@ void t_set_alias(char *alias_pair)
 }
 
 /**
- * handl_e_alias_args - Evaluates alias input command and decides what to do
+ * handle_alias_args - Evaluates alias input command and decides what to do
  * @commands: Arrays of commands
  * @out_addrs: Pointer to out's head node
  *
  * Return: -1 if error happens, 0 otherwise
 */
-int handl_e_alias_args(char **commands, list_t **out_addrs)
+int handle_alias_args(char **commands, list_t **out_addrs)
 {
 	int i, len, was_alias;
 	int status = 0;
 	list_t *curr;
 	list_t **alias_addrs = get_alias_head();
 
-	_tset_process_exit_code(0);
+	set_process_exit_code(0);
 	for (i = 1; commands[i] != NULL; i++)
 	{
 		was_alias = 0;
-		len =_tstrlen(commands[i]);
+		len = _strlen(commands[i]);
 		/* Check that if user is trying to print an alias */
 		for (curr = *alias_addrs; curr != NULL; curr = curr->next)
 		{
-			if (t_strncmp(curr->str, commands[i], len) == 0 && (curr->str)[len] == '=')
+			if (_strncmp(curr->str, commands[i], len) == 0 && (curr->str)[len] == '=')
 			{ /* Means to list an alias */
 				was_alias = 1;
 				add_node_end(out_addrs, curr->str);
@@ -114,15 +114,15 @@ int handl_e_alias_args(char **commands, list_t **out_addrs)
 		if (was_alias)
 			continue;
 		/* Here, user is trying to set an alias or print an unexistent one */
-		if (t_is_set_alias(commands[i]))
-			t_set_alias(commands[i]); /* Validate that the set format is fine */
+		if (is_set_alias(commands[i]))
+			set_alias(commands[i]); /* Validate that the set format is fine */
 		else /* Print errors */
 		{
 			status = -1;
-			_tset_process_exit_code(1);
-			t_puts("alias: ");
-			t_puts(commands[i]);
-			t_puts(" not found\n");
+			set_process_exit_code(1);
+			_puts("alias: ");
+			_puts(commands[i]);
+			_puts(" not found\n");
 		}
 	}
 
@@ -130,14 +130,14 @@ int handl_e_alias_args(char **commands, list_t **out_addrs)
 }
 
 /**
- * t_handle_aliases - Handle alias replacement
+ * handle_aliases - Handle alias replacement
  * @commands: Arrays of commands
 */
-void t_handle_aliases(char **commands)
+void handle_aliases(char **commands)
 {
 	list_t *curr;
 	list_t **alias_addrs = get_alias_head();
-	int cmd_len =_tstrlen(commands[0]);
+	int cmd_len = _strlen(commands[0]);
 	char *str;
 	char tmp_buff[250];
 	int i, alias_len = 0;
@@ -153,12 +153,12 @@ void t_handle_aliases(char **commands)
 	for (curr = *alias_addrs; curr != NULL; curr = curr->next)
 	{
 		str = curr->str;
-		if (t_strncmp(commands[0], str, cmd_len) == 0 && str[cmd_len] == '=')
+		if (_strncmp(commands[0], str, cmd_len) == 0 && str[cmd_len] == '=')
 		{ /* the command is an alias */
-			alias_len =_tstrlen(&str[cmd_len + 2]); /* +2 beacause of "='" chars */
+			alias_len = _strlen(&str[cmd_len + 2]); /* +2 beacause of "='" chars */
 			strncpy(tmp_buff, &str[cmd_len + 2], alias_len - 1);
 			tmp_buff[alias_len] = '\0';
-			/* fr  and then update the command */
+			/* Free and t update the command */
 			free(commands[0]);
 			commands[0] = duplicate_string(tmp_buff);
 			break;
