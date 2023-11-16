@@ -4,7 +4,7 @@ static char *FIRST_ARG;
 
 int handle_arguments(int ac, char **av, int *exec_file);
 void sigintHandler(int sig_num);
-char *t_get_first_av();
+char *get_first_av();
 
 /**
  * main - Entry point
@@ -24,7 +24,7 @@ int main(int ac, char **av)
 
 	signal(SIGINT, sigintHandler);
 	fd = handle_arguments(ac, av, &exec_file);
-	/*t_update_count_lines();*/
+	/*update_count_lines();*/
 
 	while (1)
 	{
@@ -32,25 +32,25 @@ int main(int ac, char **av)
 		if (isatty(STDIN_FILENO) == 1 && exec_file == 0)
 			write(STDOUT_FILENO, "$ ", 2);
 		/* Read commands from console */
-		/*read = tread_line(fd, &buff);*/
+		/*read = read_line(fd, &buff);*/
 		read = getline(&buff, &buff_len, stdin);
 		if (read == EOF)
 		{
 			free(buff);
-			exit(*t_process_exit_code());
+			exit(*process_exit_code());
 		}
-		/*thandle_history(buff);*/
+		/*handle_history(buff);*/
 		/* Remove comments & '\n' char from buffer */
 		buff = handle_comment(buff);
-		t_strtok(buff, "\n");
+		_strtok(buff, "\n");
 		/* Handling_semicolon, ||, && and executes inside of the function */
-		_handling_semicolon_and_operators(buff, read, av[0]);
+		handling_semicolon_and_operators(buff, read, av[0]);
 	}
 	/* Free buffer memory */
 	free(buff);
 	if (exec_file)
 		close(fd);
-	return (*t_process_exit_code());
+	return (*process_exit_code());
 }
 
 /**
@@ -68,7 +68,7 @@ int handle_arguments(int ac, char **av, int *exec_file)
 
 	if (ac > 2)
 	{
-		write(STDERR_FILENO, err_msg,_tstrlen(err_msg));
+		write(STDERR_FILENO, err_msg, _strlen(err_msg));
 		exit(1);
 	}
 	if (ac == 2)
@@ -95,11 +95,11 @@ void sigintHandler(int __attribute__((unused))sig_num)
 }
 
 /**
- * t_get_first_av - Returns the first argument passed to main
+ * get_first_av - Returns the first argument passed to main
  *
- * Return: Pointer to first arg passed to main
+ * Return: its Pointer to first arg passed to main
 */
-char *t_get_first_av(void)
+char *get_first_av(void)
 {
 	return (FIRST_ARG);
 }

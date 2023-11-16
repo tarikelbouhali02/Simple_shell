@@ -1,37 +1,37 @@
 #include "shell.h"
 
 /**
- * _env - Prints the environment variables to stdout
+ * env - Prints the environment variables to stdout
 */
-void _env(void)
+void env(void)
 {
 	int i;
-	char **_env = __environ;
+	char **env = __environ;
 
-	for (i = 0; _env[i]; i++)
+	for (i = 0; env[i]; i++)
 	{
-		write(STDOUT_FILENO, _env[i],_tstrlen(_env[i]));
+		write(STDOUT_FILENO, env[i], _strlen(env[i]));
 		write(STDOUT_FILENO, "\n", 1);
 	}
 
-	_tset_process_exit_code(0);
+	set_process_exit_code(0);
 }
 
 /**
- * t_setenv - Sets or adds an environment variable
+ * _setenv - Sets or adds an environment variable
  * @name: Name for the new env variable
  * @value: Value for the new env variable
  *
  * Return: 1 on success, -1 on error
  */
-int t_setenv(char *name, char *value)
+int _setenv(char *name, char *value)
 {
 	int env_index, new_var_len;
 
-	if (t_validate_env_name(name) == -1)
+	if (validate_env_name(name) == -1)
 		return (-1);
 
-	env_index = t_get_env_index(name);
+	env_index = get_env_index(name);
 	if (env_index == -1)
 	{/* var doen't exist, SO CREATE IT */
 		int env_count = 0;
@@ -42,9 +42,9 @@ int t_setenv(char *name, char *value)
 
 		old_size = sizeof(char *) * (env_count);
 		new_size = sizeof(char *) * (env_count + 2);
-		__environ = t_realloc(__environ, old_size, new_size);
+		__environ = _realloc(__environ, old_size, new_size);
 		if (__environ == NULL)
-			tdispatch_error("Error while t_reallocating memory for new env var");
+			dispatch_error("Error while _reallocating memory for new env var");
 
 		/* The new value will be stored at index env_count */
 		env_index = env_count;
@@ -57,14 +57,14 @@ int t_setenv(char *name, char *value)
 		free(__environ[env_index]);
 	}
 
-	new_var_len =_tstrlen(name) +_tstrlen(value) + 2;
+	new_var_len = _strlen(name) + _strlen(value) + 2;
 	/* store the env var either if it exists or it needs to be overwritten */
 	__environ[env_index] = allocate_memory(sizeof(char) * new_var_len);
-	t_strcpy(__environ[env_index], name);
-	t_strcat(__environ[env_index], "=");
-	t_strcat(__environ[env_index], value);
+	_strcpy(__environ[env_index], name);
+	_strcat(__environ[env_index], "=");
+	_strcat(__environ[env_index], value);
 
-	_tset_process_exit_code(0);
+	set_process_exit_code(0);
 	return (1);
 }
 
@@ -78,7 +78,7 @@ int _unsetenv(char *name)
 {
 	int env_index, i;
 
-	env_index = t_get_env_index(name);
+	env_index = get_env_index(name);
 	if (env_index >= 0)
 	{/* var exists, We can unset it */
 		free(__environ[env_index]);
@@ -86,34 +86,34 @@ int _unsetenv(char *name)
 		for (i = env_index; __environ[i] != NULL; i++)
 			__environ[i] = __environ[i + 1];
 
-		_tset_process_exit_code(0);
+		set_process_exit_code(0);
 		return (1);
 	}
 
 	/* Var doesn't exist, we can print error or do nothing */
-	_tset_process_exit_code(0); /* Indicates that no error ocurred */
+	set_process_exit_code(0); /* Indicates that no error ocurred */
 
 	return (1);
 }
 
 /**
- * t_cd - Changes the current directory of the process
+ * _cd - Changes the current directory of the process
  * @path: Path to wich change the working directory
  *
  * Return: 1 on success, -1 on error
 */
-int t_cd(char *path)
+int _cd(char *path)
 {
 	char buff[1024];
 	char *oldpwd;
 	char *_path = path;
 
 	if (_strcmp(path, "-") == 0)
-		path = t_getenv("OLDPWD");
+		path = _getenv("OLDPWD");
 
 	if (path == NULL)
 	{
-		print_tbuiltin_error("cd: OLDPWD not set", "");
+		print_builtin_error("cd: OLDPWD not set", "");
 		return (-1);
 	}
 	/* Needed to avoid reading on freed memory */
@@ -123,32 +123,32 @@ int t_cd(char *path)
 	if (oldpwd == NULL)
 	{
 		free(path);
-		print_tbuiltin_error("cd: couldn't get current dir", "");
+		print_builtin_error("cd: couldn't get current dir", "");
 		return (-1);
 	}
 	/* Try to change the current dir */
 	if (chdir(path) == -1)
 	{
 		free(path);
-		print_tbuiltin_error("cd: can't change cd to ", _path);
-		_tset_process_exit_code(1);
+		print_builtin_error("cd: can't change cd to ", _path);
+		set_process_exit_code(1);
 		return (-1);
 	}
 	/* Update env variables */
-	t_setenv("OLDPWD", oldpwd);
-	t_setenv("PWD", path);
+	_setenv("OLDPWD", oldpwd);
+	_setenv("PWD", path);
 	free(path);
-	_tset_process_exit_code(0);
+	set_process_exit_code(0);
 	return (1);
 }
 
 /**
- * t_alias - Sets an alias command
+ * _alias - Sets an alias command
  * @commands: List of commands
  *
  * Return: -1 on error, 0 otherwise
 */
-int t_alias(char **commands)
+int _alias(char **commands)
 {
 	int status = 0;
 	list_t *curr;
@@ -160,10 +160,10 @@ int t_alias(char **commands)
 	{ /* This means to list all the aliases */
 		for (curr = *alias_addrs; curr != NULL; curr = curr->next)
 		{
-			t_puts(curr->str);
-			t_puts("\n");
+			_puts(curr->str);
+			_puts("\n");
 		}
-		_tset_process_exit_code(0);
+		set_process_exit_code(0);
 		return (1);
 	}
 	/* List aliases and sets the aliases that have the form name=value */
@@ -171,8 +171,8 @@ int t_alias(char **commands)
 	/* print listed alias */
 	for (curr = out_head; curr != NULL; curr = curr->next)
 	{
-		t_puts(curr->str);
-		t_puts("\n");
+		_puts(curr->str);
+		_puts("\n");
 	}
 	/* free list */
 	free_list(out_head);
