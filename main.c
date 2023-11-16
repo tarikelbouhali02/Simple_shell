@@ -9,7 +9,7 @@ char *get_first_av();
 /**
  * main - Entry point
  * @ac: number of arguments
- * @av: Array of arguments
+ * @av: its Array of arguments
  *
  * Return: 0 on success
 */
